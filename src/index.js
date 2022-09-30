@@ -1,5 +1,9 @@
 const API = "https://api.ellipsis-drive.com/v3/";
 
+apiCall = (path, body, user, cb) => {
+  return;
+};
+
 class EllipsisPreview {
   computeRatio = (extent) =>
     (extent.xMax - extent.xMin) / (extent.yMax - extent.yMin);
@@ -90,7 +94,12 @@ class EllipsisPreview {
         this.settings.loggedIn = true;
       }
     }
+    this.render();
   }
+
+  render = () => {
+    this.settings.div.innerHTML = "<p> test </p>";
+  };
 }
 
 export default EllipsisPreview;
