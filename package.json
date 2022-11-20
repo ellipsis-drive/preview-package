@@ -1,0 +1,31 @@
+{
+  "name": "ellipsis-preview",
+  "version": "0.1.0",
+  "description": "Preview ellipsis layers.",
+  "private": false,
+  "keywords": [
+    "Ellipsis",
+    "Ellipsis Drive",
+    "Ellipsis Drive Preview"
+  ],
+  "main": "build/ellipsis-preview.js",
+  "module": "build/ellipsis-preview.js",
+  "author": "Floyd Remmerswaal",
+  "files": [
+    "build",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ellipsis-drive/preview-package.git"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.build.js",
+    "start": "webpack --config webpack.config.js --watch & live-server src/test/dist"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  }
+}

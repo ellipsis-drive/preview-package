@@ -1,6 +1,6 @@
 const API = "https://api.ellipsis-drive.com/v3/";
 
-apiCall = (path, body, user, cb) => {
+let apiCall = (path, body, user, cb) => {
   return;
 };
 
@@ -102,4 +102,4 @@ class EllipsisPreview {
   };
 }
 
-export default EllipsisPreview;
+export { EllipsisPreview };
