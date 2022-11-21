@@ -67,9 +67,9 @@ class EllipsisPreview {
   };
 
   defaultSettings = {
-    loggedIn: false,
     div: null,
     token: null,
+    pathId: null,
   };
 
   settings = {};
@@ -97,8 +97,25 @@ class EllipsisPreview {
     this.render();
   }
 
+  p = (str) => {
+    let elem = document.createElement("p");
+    elem.innerText = str;
+    elem.classList.add("ellipsis-preview-p");
+    elem.style.fontFamily = `"Roboto Condensed","Roboto","Helvetica","Lucida Sans Unicode","sans-serif"`;
+    return elem;
+  };
+
+
   render = () => {
-    this.settings.div.innerHTML = "<p> test </p>";
+
+    let div = document.createElement("div");
+    let p = this.p("Ellipsis Preview")
+    let pathId = this.p(this.settings.pathId);
+
+    div.appendChild(p)
+    div.appendChild(pathId);
+
+    this.settings.div.appendChild(div);
   };
 }
 

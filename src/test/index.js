@@ -1,19 +1,10 @@
 import { EllipsisPreview } from "../lib";
 
-let cb = (layer) => {
-  console.log("Clicked on layer:");
-  console.log(layer);
-};
-
 let div = document.getElementById("test");
 
 let options = {
   div: div,
-  cb: cb,
-  searchIncludeFolders: true,
-  showVector: true,
-  showRaster: true,
-  allowExpandMaps: true,
+  pathId: "0ec49fb8-f577-45de-8e4f-6243fdc62908"
 };
 
-let myDrive = new EllipsisPreview(options);
+let preview = new EllipsisPreview(options);
