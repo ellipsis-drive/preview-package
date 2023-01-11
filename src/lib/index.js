@@ -1,53 +1,69 @@
 import proj4 from "./proj4";
 
-const API = "https://api.ellipsis-drive.com/v3/";
+const API = "https://api.ellipsis-drive.com/v3";
+
+const WIDTH = "640";
+const HEIGHT = "360";
 
 let apiCall = (path, body, user, cb) => {
   return;
 };
 
 class EllipsisPreview {
-
   isValidTimestamp = (t) => {
-    if (t.status !== 'active') {
-      return { available: false, reason: 'Timestamp not active' };
+    if (t.status !== "active") {
+      return { available: false, reason: "Timestamp not active" };
     } else if (t.availability.blocked) {
       return { available: false, reason: t.availability.reason };
     }
     return { available: true };
   };
-  
+
   isValidMap = (m) => {
     if (!m) {
-      return { available: false, reason: 'No Layer' };
+      return { available: false, reason: "No Layer" };
     }
-    if (m.type !== 'raster' && m.type !== 'vector') {
+    if (m.type !== "raster" && m.type !== "vector") {
       return { available: true };
     }
     if (m.disabled) {
-      return { available: false, reason: 'Layer disabled' };
+      return { available: false, reason: "Layer disabled" };
     }
     if (m.deleted) {
-      return { available: false, reason: 'Layer trashed' };
+      return { available: false, reason: "Layer trashed" };
     }
     if (m.yourAccess.accessLevel === 0) {
-      return { available: false, reason: 'No access' };
+      return { available: false, reason: "No access" };
     }
-    if (m[m.type].timestamps.filter((t) => this.isValidTimestamp(t, m).available).length === 0) {
-      if (m[m.type].timestamps.find((t) => t.availability?.reason === 'relocation')) {
-        return { available: false, reason: 'Relocating layer' };
-      } else if (m[m.type].timestamps.find((t) => t.availability?.reason === 'reindexing')) {
-        return { available: false, reason: 'Reindexing layer' };
-      } else if (m.type === 'raster' && m[m.type].timestamps.filter((t) => t.uploads.completed > 0).length === 0) {
-        return { available: false, reason: 'No uploads' };
-      } else if (m[m.type].timestamps.find((t) => t.status === 'activating')) {
-        return { available: false, reason: 'Activating files' };
-      } else if (m[m.type].timestamps.find((t) => t.status === 'pausing')) {
-        return { available: false, reason: 'Pausing files' };
-      } else if (m[m.type].timestamps.find((t) => t.status === 'created')) {
-        return { available: false, reason: 'No active timestamps' };
+    if (
+      m[m.type].timestamps.filter((t) => this.isValidTimestamp(t, m).available)
+        .length === 0
+    ) {
+      if (
+        m[m.type].timestamps.find(
+          (t) => t.availability?.reason === "relocation"
+        )
+      ) {
+        return { available: false, reason: "Relocating layer" };
+      } else if (
+        m[m.type].timestamps.find(
+          (t) => t.availability?.reason === "reindexing"
+        )
+      ) {
+        return { available: false, reason: "Reindexing layer" };
+      } else if (
+        m.type === "raster" &&
+        m[m.type].timestamps.filter((t) => t.uploads.completed > 0).length === 0
+      ) {
+        return { available: false, reason: "No uploads" };
+      } else if (m[m.type].timestamps.find((t) => t.status === "activating")) {
+        return { available: false, reason: "Activating files" };
+      } else if (m[m.type].timestamps.find((t) => t.status === "pausing")) {
+        return { available: false, reason: "Pausing files" };
+      } else if (m[m.type].timestamps.find((t) => t.status === "created")) {
+        return { available: false, reason: "No active timestamps" };
       } else {
-        return { available: false, reason: 'No timestamps' };
+        return { available: false, reason: "No timestamps" };
       }
     }
     return { available: true };
@@ -148,10 +164,16 @@ class EllipsisPreview {
   };
 
   getReprojectedExtent = (extent) => {
-    const reprojectedMins = proj4('EPSG:4326', 'EPSG:3857', [extent.xMin, extent.yMin]);
-  
-    const reprojectedMaxs = proj4('EPSG:4326', 'EPSG:3857', [extent.xMax, extent.yMax]);
-  
+    const reprojectedMins = proj4("EPSG:4326", "EPSG:3857", [
+      extent.xMin,
+      extent.yMin,
+    ]);
+
+    const reprojectedMaxs = proj4("EPSG:4326", "EPSG:3857", [
+      extent.xMax,
+      extent.yMax,
+    ]);
+
     return {
       xMin: reprojectedMins[0],
       yMin: reprojectedMins[1],
@@ -161,34 +183,86 @@ class EllipsisPreview {
   };
 
   getBaseMapPng = ({ extent, height, width }) => {
+    let img = document.createElement("img");
+
     const newExtent = this.getNewExtent(
       width / height,
       this.getReprojectedExtent(extent)
     );
 
-    return `https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
+    img.src = `https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
       newExtent.xMin
     },${newExtent.yMin},${newExtent.xMax},${
       newExtent.yMax
     }&SRS=EPSG%3A3857&WIDTH=${width}&HEIGHT=${Number(
       height / 1
     )}&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true`;
+
+    img.alt = this.layer.name;
+    img.loading = "lazy";
+
+    let style = {
+      top: "0",
+      width: "100%",
+      bottom: "0",
+      cursor: "auto",
+      height: "100%",
+      zIndex: "1",
+      position: "absolute",
+      background: "transparent",
+      objectFit: "fill",
+    };
+
+    for (const key in style) {
+      img.style[key] = style[key];
+    }
+
+    return img;
   };
 
-  getEllipsisMapPng = ({ mapId, extent, timestampId, styleId, width, height, token }) => {
+  getEllipsisMapPng = ({
+    mapId,
+    extent,
+    timestampId,
+    styleId,
+    width,
+    height,
+    token,
+  }) => {
+    let img = document.createElement("img");
+
+    extent = this.getNewExtent(
+      width / height,
+      this.getReprojectedExtent(extent)
+    );
+    let url = "";
     if (token) {
-      return `v3/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
-        extent.xMin
-      },${extent.yMin},${extent.xMax},${
-        extent.yMax
-      }&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
+      url = `${API}/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${extent.xMin},${extent.yMin},${extent.xMax},${extent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
     } else {
-      return `v3/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
-        extent.xMin
-      },${extent.yMin},${extent.xMax},${
-        extent.yMax
-      }&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
+      url = `${API}ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${extent.xMin},${extent.yMin},${extent.xMax},${extent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
     }
+
+    img.src = url;
+    img.alt = this.layer.name;
+    img.loading = "lazy";
+
+    let style = {
+      top: "0",
+      width: "100%",
+      bottom: "0",
+      cursor: "auto",
+      height: "100%",
+      zIndex: "1",
+      position: "absolute",
+      background: "transparent",
+      objectFit: "fill",
+    };
+
+    for (const key in style) {
+      img.style[key] = style[key];
+    }
+
+    return img;
   };
 
   defaultSettings = {
@@ -243,7 +317,8 @@ class EllipsisPreview {
 
   getPlaceholderImg = () => {
     let placeholder = document.createElement("div");
-    placeholder.style.backgroundImage = "url(https://app.ellipsis-drive.com/images/drive/map_placeholder.jpg)";
+    placeholder.style.backgroundImage =
+      "url(https://app.ellipsis-drive.com/images/drive/map_placeholder.jpg)";
     placeholder.style.width = "inherit";
     placeholder.style.height = "inherit";
     placeholder.style.gap = "12px";
@@ -251,33 +326,35 @@ class EllipsisPreview {
     placeholder.style.left = "0";
     placeholder.style.right = "0";
     placeholder.style.bottom = "0";
-    placeholder.style.display = "flex";;
+    placeholder.style.display = "flex";
     placeholder.style.alignItems = "center";
-    placeholder.style.flexDirection= "column";
+    placeholder.style.flexDirection = "column";
     placeholder.style.backgroundSize = "contain";
     placeholder.style.justifyContent = "center";
-    placeholder.style.backgroundImage = "url(https://app.ellipsis-drive.com/images/drive/map_placeholder.jpg)";
+    placeholder.style.backgroundImage =
+      "url(https://app.ellipsis-drive.com/images/drive/map_placeholder.jpg)";
     placeholder.style.backgroundPosition = "center";
     return placeholder;
-  }
+  };
 
   getExtent = (layer) => {
     // TODO for now we just pick the first one, but some more elaborate picking scheme should be implemented later
     let type = layer.type;
-    return {extent: layer[type].timestamps[0].extent, timestampId: layer[type].timestamps[0].id, styleId: layer[type].styles[0].id};
+    return {
+      extent: layer[type].timestamps[0].extent,
+      timestampId: layer[type].timestamps[0].id,
+      styleId: layer[type].styles[0].id,
+    };
 
-    if (this.settings.timestampId === null){
+    if (this.settings.timestampId === null) {
       // find our own, if that fails we render placeholder
-
-      
-
     } else {
-      timestampId = this.settings.timestampId
+      timestampId = this.settings.timestampId;
     }
-    return layer[type].timestamps[timestampId].extent
-  }
+    return layer[type].timestamps[timestampId].extent;
+  };
 
-  requestEllipsisPng = () =>{
+  requestEllipsisPng = async () => {
     let obj = {
       extent: this.getExtent(this.layer).extent,
       width: WIDTH,
@@ -286,41 +363,41 @@ class EllipsisPreview {
       timestampId: this.getExtent(this.layer).timestampId,
       styleId: this.getExtent(this.layer).styleId,
       mapId: this.layer.id,
-    }
+    };
     let ellipsispng = this.getEllipsisMapPng(obj);
 
-    let request = await fetch(`${API}${ellipsispng}}`, {
+    let request = await fetch(ellipsispng, {
       method: "GET",
-      headers: headers,
     });
-  }
 
-  requestBasePng = () => {
-    let obj = {
-      extent: this.getExtent(this.layer).extent,
-      width: WIDTH,
-      height: HEIGHT,
-      token: this.settings.token,
-      timestampId: this.getExtent(this.layer).timestampId,
-      styleId: this.getExtent(this.layer).styleId,
-      mapId: this.layer.id,
-    }
-
-    let basepng = this.getBaseMapPng(obj);
-  }
+    return request;
+  };
 
   previewRender = () => {
-
-    const WIDTH = "300";
-    const HEIGHT = "200"; 
-
     let div = document.createElement("div");
-    console.log(this.layer);
 
+    div.style.position = "relative";
 
     let imgdiv = document.createElement("div");
+    imgdiv.className = "ellipsis-preview-img";
     imgdiv.style.width = WIDTH;
     imgdiv.style.height = HEIGHT;
+
+    let style = {
+      top: "0",
+      left: "0",
+      right: "0",
+      bottom: "0",
+      display: "flex",
+      position: "absolute",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "LightGray",
+    };
+
+    for (const key in style) {
+      imgdiv.style[key] = style[key];
+    }
 
     let placeholder = this.getPlaceholderImg();
     imgdiv.appendChild(placeholder);
@@ -333,27 +410,26 @@ class EllipsisPreview {
       timestampId: this.getExtent(this.layer).timestampId,
       styleId: this.getExtent(this.layer).styleId,
       mapId: this.layer.id,
-    }
+    };
 
     let basepng = this.getBaseMapPng(obj);
     let ellipsispng = this.getEllipsisMapPng(obj);
 
-    console.log(basepng);
-    console.log(ellipsispng);
-
     div.appendChild(this.p(this.layer.name));
     div.appendChild(this.p(this.settings.pathId));
+    imgdiv.appendChild(basepng);
+    imgdiv.appendChild(ellipsispng);
     div.appendChild(imgdiv);
 
     return div;
-  }
+  };
 
   loadingRender = () => {
     // should at some point just render the same as previewrender, but grayed out
     let div = document.createElement("div");
     div.appendChild(this.p("Loading..."));
     return div;
-  }
+  };
 
   render = () => {
     this.settings.div.innerHTML = "";
