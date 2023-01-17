@@ -371,6 +371,13 @@ class EllipsisPreview {
 
   previewRender = () => {
     let div = document.createElement("div");
+    div.id = `ellipsis-preview-${this.layer.id}` 
+
+    div.style.background = "blue";
+    div.style.width = `${WIDTH}px`;
+    div.style.height = `${HEIGHT}px`;
+    div.style.borderRadius = "4px";
+    div.style.boxShadow = "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px";
 
     div.style.position = "relative";
 
@@ -444,21 +451,31 @@ class EllipsisPreview {
     layertype.style.padding = "0 12 px";
     layertype.style.zIndex = "3"
     layertype.style.position = "absolute";
-    
+    layertype.style.height = "32px";
+
+    layertype.style.display = "inline-flex";
+    layertype.style.justifyContent = "center";
+    layertype.style.borderRadius = "16px";
 
     let typesvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     typesvg.innerHTML = SVG[this.layer.type]
     typesvg.style.fill = "#fff";
-    typesvg.style.fontSize = "18px";
+    typesvg.style.width = "1.1em";
+
 
     layertype.appendChild(typesvg);
-    let layertypetext = this.p(this.layer.type);
+    let layertypetext = document.createElement("span");
+    layertypetext.innerHTML = this.layer.type;
     layertypetext.style.textTransform = "capitalize";
+    layertypetext.style.display = "inline-flex";
+    layertypetext.style.alignItems = "center";
+    
     layertype.appendChild(layertypetext);
 
     
     let footerdiv = document.createElement("div");
-    footerdiv.appendChild(this.p(this.layer.metadata.description));
+    if (this.layer.metadata.description !== "")
+      footerdiv.appendChild(this.p(this.layer.metadata.description));
 
     div.appendChild(headerdiv);
     
