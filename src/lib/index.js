@@ -386,7 +386,7 @@ class EllipsisPreview {
     let div = document.createElement("div");
     div.id = `ellipsis-preview-${this.layer.id}` 
 
-    div.style.background = "blue";
+    div.style.background = "#FFF";
     div.style.width = `${WIDTH}px`;
     div.style.height = `${HEIGHT}px`;
     div.style.borderRadius = "4px";
@@ -464,7 +464,6 @@ class EllipsisPreview {
     let layertype = document.createElement("div");
     layertype.style.backgroundColor = "#00796B";
     layertype.style.color = "#fff";
-    layertype.style.gap = "8px";
     layertype.style.right = "12px";
     layertype.style.bottom = "12px";
     layertype.style.padding = "0 12 px";
@@ -480,7 +479,7 @@ class EllipsisPreview {
     typesvg.innerHTML = SVG[this.layer.type]
     typesvg.style.fill = "#fff";
     typesvg.style.width = "1.1em";
-
+    typesvg.style.paddingLeft = "10px";
 
     layertype.appendChild(typesvg);
     let layertypetext = document.createElement("span");
@@ -488,6 +487,8 @@ class EllipsisPreview {
     layertypetext.style.textTransform = "capitalize";
     layertypetext.style.display = "inline-flex";
     layertypetext.style.alignItems = "center";
+    layertypetext.style.padding = "0 12px";
+    layertypetext.style.fontFamily = "Roboto Condensed, Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol";
     
     layertype.appendChild(layertypetext);
 
