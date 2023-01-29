@@ -386,6 +386,36 @@ class EllipsisPreview {
     return request;
   };
 
+  invalidRender = (validobj) => {
+    let div = document.createElement("div");
+    div.className = "ellipsis-preview-img";
+    div.style.width = `${WIDTH}px`;
+    div.style.height = `${HEIGHT}px`;
+
+    let placeholder = this.getPlaceholderImg();
+    placeholder.style.backgroundColor = "#00000054";
+
+    let reason = document.createElement("div");
+
+    reason.appendChild(this.p(validobj.reason));
+
+    reason.style.color = "#FFF";
+
+    reason.style.position = "absolute";
+    
+    div.style.display = "flex";
+    div.style.display = "flex";
+    div.style.position = "absolute";
+    div.style.alignItems = "center";
+    div.style.flexDirection = "column";
+    div.style.backgroundSize = "contain";
+    div.style.justifyContent = "center";
+
+    div.appendChild(placeholder);
+    div.appendChild(reason);
+    return div;
+  }
+
   previewRender = () => {
 
     let div = document.createElement("div");
@@ -409,9 +439,6 @@ class EllipsisPreview {
     for (const key in style) {
       div.style[key] = style[key];
     }
-
-    let placeholder = this.getPlaceholderImg();
-    div.appendChild(placeholder);
 
     let obj = {
       extent: this.getExtent(this.layer).extent,
@@ -484,7 +511,13 @@ class EllipsisPreview {
     this.settings.div.innerHTML = "";
     if (this.settings.loggedIn) {
       if (this.layerLoaded) {
-        this.settings.div.appendChild(this.previewRender());
+        let valid = this.isValidMap(this.layer);
+        console.log(valid);
+        if (valid.available){
+          this.settings.div.appendChild(this.previewRender());
+        } else {
+          this.settings.div.appendChild(this.invalidRender(valid));
+        }
       } else {
         this.settings.div.appendChild(this.loadingRender());
       }
