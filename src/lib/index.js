@@ -113,14 +113,9 @@ class EllipsisPreview {
     return button;
   };
 
-  loginDiv = () => {
+  noTokenDiv = () => {
     let div = document.createElement("div");
-    div.appendChild(this.p("Please log in to your Ellipsis Drive account:"));
-    div.style.textAlign = "center";
-    let button = this.getButton("Log in", () => {
-      window.location = `https://app.ellipsis-drive.com/login?referer=${window.location.href}`;
-    });
-    div.appendChild(button);
+    div.appendChild(this.p("Please supply a token"));
     return div;
   };
 
@@ -307,14 +302,6 @@ class EllipsisPreview {
     if ("token" in options) {
       this.settings.token = options.token;
       this.settings.loggedIn = true;
-    } else {
-      // find out if there's a token for us in the url
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      if (urlParams.has("token")) {
-        this.settings.token = urlParams.get("token");
-        this.settings.loggedIn = true;
-      }
     }
 
     this.getMetaDataAndProfileImage(this.settings.pathId);
@@ -522,7 +509,7 @@ class EllipsisPreview {
         this.settings.div.appendChild(this.loadingRender());
       }
     } else {
-      this.settings.div.appendChild(this.loginDiv());
+      this.settings.div.appendChild(this.noTokenDiv());
     }
   };
 }
