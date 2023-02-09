@@ -1,4 +1,4 @@
 node_modules/
-./src/test/dist/main.js
+src/test/dist/main.js
 .env
-./src/test/index_with_token.js
+src/test/index_with_token.js
