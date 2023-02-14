@@ -89,10 +89,8 @@ class EllipsisPreview {
 
     });
 
-    this.layerLoaded = true;
-    this.layer = await request.json();
+    this.settings.layer = await request.json();
 
-    console.log(this.layer);
     this.render();
     return;
   };
@@ -153,15 +151,17 @@ class EllipsisPreview {
       this.getReprojectedExtent(extent)
     );
 
+    const tokenstr = this.settings.osmToken === null ? "" : `&TOKEN=${this.settings.osmToken}`
+
     img.src = `https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
       newExtent.xMin
     },${newExtent.yMin},${newExtent.xMax},${
       newExtent.yMax
     }&SRS=EPSG%3A3857&WIDTH=${this.settings.width}&HEIGHT=${Number(
       height / 1
-    )}&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true`;
+    )}&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true${tokenstr}`;
 
-    img.alt = this.layer.name;
+    img.alt = this.settings.layer.name;
     img.loading = "lazy";
 
     let style = {
@@ -189,6 +189,7 @@ class EllipsisPreview {
     height,
     token,
   }, targetdiv) => {
+
     let img = document.createElement("img");
     let vectorssvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
@@ -198,13 +199,32 @@ class EllipsisPreview {
 
     let url = "";
 
-    if (this.layer.type === "raster"){
+    if (this.settings.layer.type === "raster"){
       if (token) {
         url = `${API}/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${this.settings.width}&height=${this.settings.height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
       } else {
         url = `${API}ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${this.settings.width}&height=${this.settings.height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
       }
-    } else if (this.layer.type === "vector"){
+
+      img.src = url;
+      img.alt = this.settings.layer.name;
+      img.loading = "lazy";
+  
+      let style = {
+        top: "0",
+        bottom: "0",
+        zIndex: "2",
+        position: "absolute",
+        background: "transparent",
+      };
+  
+      for (const key in style) {
+        img.style[key] = style[key];
+      }
+  
+      targetdiv.appendChild(img);
+
+    } else if (this.settings.layer.type === "vector"){
 
       let headers = {
         "Content-Type": "application/json",
@@ -263,8 +283,6 @@ class EllipsisPreview {
       });
 
       const svgStrings = converter.convert(reprojectedResult);
-      
-      console.log(svgStrings);
 
       vectorssvg.style.width = this.settings.width;
       vectorssvg.style.height = this.settings.height;
@@ -274,32 +292,9 @@ class EllipsisPreview {
       vectorssvg.style.height = "100%";
       vectorssvg.innerHTML = svgStrings;
 
-    }
-
-    img.src = url;
-    img.alt = this.layer.name;
-    img.loading = "lazy";
-
-    let style = {
-      top: "0",
-      bottom: "0",
-      zIndex: "2",
-      position: "absolute",
-      background: "transparent",
-    };
-
-    for (const key in style) {
-      img.style[key] = style[key];
-    }
-
-    if (this.layer.type == "raster"){
-      targetdiv.appendChild(img);
-    } else {
       targetdiv.appendChild(vectorssvg)
     }
-    
 
-    return img;
   };
 
   defaultSettings = {
@@ -312,22 +307,17 @@ class EllipsisPreview {
     width: null,
     height: null,
     disableCbIfNoPreview: false,
+    osmToken: null,
+    layer: null,
   };
 
   settings = {};
-  layer = null;
-  layerLoaded = false;
-  profileImage = null;
 
   constructor(options = {}) {
     this.settings = { ...this.defaultSettings, ...options };
 
     if (!("div" in options)) {
       console.warn("EllipsisPreview: no div is provided!");
-      return;
-    }
-    if (!("pathId" in options)) {
-      console.warn("EllipsisPreview: no pathId is provided!");
       return;
     }
 
@@ -342,7 +332,16 @@ class EllipsisPreview {
       this.settings.height = this.settings.div.offsetHeight;
     }
 
-    this.getMetaData(this.settings.pathId);
+    // if the user provides a layer object, we don't have to do anything
+    // if a pathId is provided, we retrieve the layer information ourselves. 
+    // if none is provided, we can't render a preview
+    if (this.settings.layer === null){
+      if (this.settings.pathId === null){
+        console.warn("EllipsisPreview: no pathId or layer object is provided!")
+      } else {
+        this.getMetaData(this.settings.pathId);
+      }
+    }
 
     this.render();
   }
@@ -376,8 +375,33 @@ class EllipsisPreview {
   };
 
   getExtent = (layer) => {
-    // TODO for now we just pick the first one, but some more elaborate picking scheme should be implemented later
     let type = layer.type;
+
+    let timestamp = null;
+    let styleId = null;
+
+    // if timestampId is provided, find that timestamp, otherwise pick the first one
+
+    if (this.settings.timestampId !== null){
+      timestamp = layer[type].timestamps.find(elem => elem.id === this.settings.timestampId);
+    } else {
+      timestamp = layer[type].timestamps[0]
+    }
+
+    // same for styleId
+
+    if (this.settings.styleId !== null){
+      styleId = this.settings.styleId;
+    } else {
+      styleId = layer[type].styles[0].id;
+    }
+
+    return {
+      extent: timestamp.extent,
+      timestampId: timestamp.id,
+      styleId: styleId,
+    }
+
     return {
       extent: layer[type].timestamps[0].extent,
       timestampId: layer[type].timestamps[0].id,
@@ -428,7 +452,7 @@ class EllipsisPreview {
     //
     if (!this.settings.disableCbIfNoPreview){
       div.onclick = () => {
-        this.settings.cb(this.layer);
+        this.settings.cb(this.settings.layer);
       }
       div.style.cursor = "pointer";
     }
@@ -446,7 +470,7 @@ class EllipsisPreview {
     div.style.width = `${this.settings.width}px`;
     div.style.height = `${this.settings.height}px`;
 
-    div.id = `ellipsis-preview-${this.layer.id}` 
+    div.id = `ellipsis-preview-${this.settings.layer.id}` 
 
     let style = {
       left: "0",
@@ -463,13 +487,13 @@ class EllipsisPreview {
     }
 
     let obj = {
-      extent: this.getExtent(this.layer).extent,
+      extent: this.getExtent(this.settings.layer).extent,
       width: this.settings.width,
       height: this.settings.height,
       token: this.settings.token,
-      timestampId: this.getExtent(this.layer).timestampId,
-      styleId: this.getExtent(this.layer).styleId,
-      mapId: this.layer.id,
+      timestampId: this.getExtent(this.settings.layer).timestampId,
+      styleId: this.getExtent(this.settings.layer).styleId,
+      mapId: this.settings.layer.id,
     };
 
     let basepng = this.getBaseMapPng(obj);
@@ -479,7 +503,7 @@ class EllipsisPreview {
     
     let layertype = document.createElement("div");
 
-    layertype.style.backgroundColor = COLOR[this.layer.type];
+    layertype.style.backgroundColor = COLOR[this.settings.layer.type];
     layertype.style.color = "#fff";
     layertype.style.right = "12px";
     layertype.style.bottom = "12px";
@@ -493,14 +517,14 @@ class EllipsisPreview {
     layertype.style.borderRadius = "16px";
 
     let typesvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    typesvg.innerHTML = SVG[this.layer.type]
+    typesvg.innerHTML = SVG[this.settings.layer.type]
     typesvg.style.fill = "#fff";
     typesvg.style.width = "1.1em";
     typesvg.style.paddingLeft = "10px";
 
     layertype.appendChild(typesvg);
     let layertypetext = document.createElement("span");
-    layertypetext.innerHTML = this.layer.type;
+    layertypetext.innerHTML = this.settings.layer.type;
     layertypetext.style.textTransform = "capitalize";
     layertypetext.style.display = "inline-flex";
     layertypetext.style.alignItems = "center";
@@ -516,7 +540,7 @@ class EllipsisPreview {
     div.appendChild(layertype);
 
     div.onclick = () => {
-      this.settings.cb(this.layer);
+      this.settings.cb(this.settings.layer);
     }
 
     div.style.cursor = "pointer";
@@ -533,10 +557,8 @@ class EllipsisPreview {
 
   render = () => {
     this.settings.div.innerHTML = "";
-    if (this.settings.loggedIn) {
-      if (this.layerLoaded) {
-        let valid = this.isValidMap(this.layer);
-        console.log(valid);
+      if (this.settings.layer !== null) {
+        let valid = this.isValidMap(this.settings.layer);
         if (valid.available){
           this.settings.div.appendChild(this.previewRender());
         } else {
@@ -545,9 +567,6 @@ class EllipsisPreview {
       } else {
         this.settings.div.appendChild(this.loadingRender());
       }
-    } else {
-      this.settings.div.appendChild(this.noTokenDiv());
-    }
   };
 }
 
