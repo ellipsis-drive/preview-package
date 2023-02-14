@@ -1,4 +1,5 @@
 import proj4 from "./proj4";
+import geojson2svg from "./geojson2svg";
 
 const API = "https://api.ellipsis-drive.com/v3";
 
@@ -77,49 +78,13 @@ class EllipsisPreview {
     return { available: true };
   };
 
-  getButton = (text, cb) => {
-    let button = document.createElement("button");
-    button.onclick = cb;
-    button.innerHTML = text;
-    button.style.color = "#fff";
-    button.style.backgroundColor = "#089EC8";
-    button.style.boxShadow =
-      "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)";
-    button.style.padding = "6px 16px";
-    button.style.fontSize = "1rem";
-    button.style.minWidth = "64px";
-    button.style.boxSizing = "border-box";
-    button.style.transition = `"background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms`;
-    button.style.fontFamily = [
-      "Roboto Condensed",
-      "Roboto",
-      "-apple-system",
-      "BlinkMacSystemFont",
-      "Segoe UI",
-      "Helvetica Neue",
-      "Arial",
-      "sans-serif",
-      "Apple Color Emoji",
-      "Segoe UI Emoji",
-      "Segoe UI Symbol",
-      "Exo 2",
-    ];
-    button.style.fontWeight = "500";
-    button.style.lineHeight = "1.75";
-    button.style.borderRadius = "4px";
-    button.style.letterSpacing = "0.5px";
-    button.style.textTransform = "uppercase";
-    button.style.border = 0;
-    return button;
-  };
-
   noTokenDiv = () => {
     let div = document.createElement("div");
     div.appendChild(this.p("Please supply a token"));
     return div;
   };
 
-  getMetaDataAndProfileImage = async (pathId) => {
+  getMetaData = async (pathId) => {
     let headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.settings.token}`,
@@ -131,22 +96,10 @@ class EllipsisPreview {
 
     });
 
-    return request.json().then(async (ret) => {
-      this.layerLoaded = true;
-      this.layer = ret;
-
-      let headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.settings.token}`,
-      };
-      let request = await fetch(`${API}/user/${this.layer.user.id}`, {method: "GET", headers: headers})
-  
-      request.json().then( ret => {
-        console.log(ret);
-        this.profileImage = `data:image/jpeg;base64,${ret.profile.picture}`;
-        this.render();
-      });
-    });
+    this.layerLoaded = true;
+    this.layer = await request.json();
+    this.render();
+    return;
   };
 
   computeRatio = (extent) =>
@@ -232,7 +185,7 @@ class EllipsisPreview {
     return img;
   };
 
-  getEllipsisMapPng = ({
+  setEllipsisMapPng = async ({
     mapId,
     extent,
     timestampId,
@@ -240,19 +193,87 @@ class EllipsisPreview {
     width,
     height,
     token,
-  }) => {
+  }, targetdiv) => {
     let img = document.createElement("img");
+    let vectorssvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-    extent = this.getNewExtent(
-      width / height,
-      this.getReprojectedExtent(extent)
-    );
+    const reprojectedExtent = this.getReprojectedExtent(extent);
+
+    const newExtent = this.getNewExtent(width/height, reprojectedExtent);
+
     let url = "";
-    let protocol = this.layer.type == "vector" ? "wfs" : "wms";
-    if (token) {
-      url = `${API}/ogc/${protocol}/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${extent.xMin},${extent.yMin},${extent.xMax},${extent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
-    } else {
-      url = `${API}ogc/${protocol}/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${extent.xMin},${extent.yMin},${extent.xMax},${extent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
+
+    if (this.layer.type === "raster"){
+      if (token) {
+        url = `${API}/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
+      } else {
+        url = `${API}ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
+      }
+    } else if (this.layer.type === "vector"){
+      let header = {};
+      let res = await fetch(`${API}/path/${mapId}/vector/timestamp/${timestampId}/listFeatures?returnType=center&pageSize=50`, {
+        method: "GET",
+        header: header,
+      });
+      res = await res.json();
+      
+      let reprojectedResult = {
+        ...res.result,
+        features: res?.result?.features?.map((feature) => {
+          return {
+            ...feature,
+            properties: {
+              ...feature?.properties,
+              color:
+                feature?.properties?.color?.length === 9
+                  ? feature?.properties?.color?.slice(0, 7)
+                  : feature?.properties?.color,
+            },
+            geometry: {
+              ...feature.geometry,
+              coordinates: proj4('EPSG:4326', 'EPSG:3857', [
+                feature.geometry.coordinates[0],
+                feature.geometry.coordinates[1],
+              ]),
+            },
+          };
+        }),
+      };
+
+      const converter = geojson2svg({
+        viewportSize: {
+          width: width,
+          height: height,
+        },
+        mapExtent: {
+          left: newExtent.xMin,
+          right: newExtent.xMax,
+          bottom: newExtent.yMin,
+          top: newExtent.yMax,
+        },
+        pointAsCircle: true,
+        r: Math.ceil((height / 100) * 5),
+        attributes: [
+          {
+            property: 'properties.color',
+            type: 'dynamic',
+            key: 'fill',
+          },
+        ],
+      });
+
+      const svgStrings = converter.convert(reprojectedResult);
+      
+      console.log(svgStrings);
+
+      vectorssvg.style.width = WIDTH;
+      vectorssvg.style.height = HEIGHT;
+      vectorssvg.style.position = "absolute";
+      vectorssvg.style.zIndex = "3";
+      vectorssvg.style.width = "100%";
+      vectorssvg.style.height = "100%";
+      vectorssvg.innerHTML = svgStrings;
+
     }
 
     img.src = url;
@@ -270,6 +291,13 @@ class EllipsisPreview {
     for (const key in style) {
       img.style[key] = style[key];
     }
+
+    if (this.layer.type == "raster"){
+      targetdiv.appendChild(img);
+    } else {
+      targetdiv.appendChild(vectorssvg)
+    }
+    
 
     return img;
   };
@@ -304,7 +332,7 @@ class EllipsisPreview {
       this.settings.loggedIn = true;
     }
 
-    this.getMetaDataAndProfileImage(this.settings.pathId);
+    this.getMetaData(this.settings.pathId);
 
     this.render();
   }
@@ -354,25 +382,6 @@ class EllipsisPreview {
     return layer[type].timestamps[timestampId].extent;
   };
 
-  requestEllipsisPng = async () => {
-    let obj = {
-      extent: this.getExtent(this.layer).extent,
-      width: WIDTH,
-      height: HEIGHT,
-      token: this.settings.token,
-      timestampId: this.getExtent(this.layer).timestampId,
-      styleId: this.getExtent(this.layer).styleId,
-      mapId: this.layer.id,
-    };
-    let ellipsispng = this.getEllipsisMapPng(obj);
-
-    let request = await fetch(ellipsispng, {
-      method: "GET",
-    });
-
-    return request;
-  };
-
   invalidRender = (validobj) => {
     let div = document.createElement("div");
     div.className = "ellipsis-preview-img";
@@ -404,7 +413,6 @@ class EllipsisPreview {
   }
 
   previewRender = () => {
-
     let div = document.createElement("div");
     div.className = "ellipsis-preview-img";
     div.style.width = `${WIDTH}px`;
@@ -416,7 +424,6 @@ class EllipsisPreview {
       left: "0",
       right: "0",
       bottom: "0",
-      display: "flex",
       position: "relative",
       alignItems: "center",
       justifyContent: "center",
@@ -438,7 +445,9 @@ class EllipsisPreview {
     };
 
     let basepng = this.getBaseMapPng(obj);
-    let ellipsispng = this.getEllipsisMapPng(obj);
+
+    let ellipsispngdiv = document.createElement("div");
+    this.setEllipsisMapPng(obj, ellipsispngdiv);
     
     let layertype = document.createElement("div");
 
@@ -475,7 +484,7 @@ class EllipsisPreview {
   
     
     div.appendChild(basepng);
-    div.appendChild(ellipsispng);
+    div.appendChild(ellipsispngdiv);
     div.appendChild(layertype);
 
     div.onclick = () => {
