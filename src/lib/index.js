@@ -398,6 +398,7 @@ class EllipsisPreview {
     reason.style.color = "#FFF";
 
     reason.style.position = "absolute";
+    reason.style.zIndex = 3;
     
     div.style.display = "flex";
     div.style.display = "flex";
@@ -407,8 +408,18 @@ class EllipsisPreview {
     div.style.backgroundSize = "contain";
     div.style.justifyContent = "center";
 
+    let grayout = document.createElement("div");
+    grayout.style.backgroundColor = "#00000054";
+    grayout.style.position = "absolute";
+    grayout.style.zIndex = "2";
+    grayout.style.width = `${WIDTH}px`;
+    grayout.style.height = `${HEIGHT}px`;
+
+
     div.appendChild(placeholder);
     div.appendChild(reason);
+    div.appendChild(grayout);
+    
     return div;
   }
 
