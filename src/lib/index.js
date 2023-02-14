@@ -518,8 +518,6 @@ class EllipsisPreview {
     layertypetext.style.fontFamily = "Roboto Condensed, Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol";
     
     layertype.appendChild(layertypetext);
-
-  
     
     div.appendChild(basepng);
     div.appendChild(ellipsispngdiv);
