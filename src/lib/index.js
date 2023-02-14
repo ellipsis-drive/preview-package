@@ -401,19 +401,6 @@ class EllipsisPreview {
       timestampId: timestamp.id,
       styleId: styleId,
     }
-
-    return {
-      extent: layer[type].timestamps[0].extent,
-      timestampId: layer[type].timestamps[0].id,
-      styleId: layer[type].styles[0].id,
-    };
-
-    if (this.settings.timestampId === null) {
-      // find our own, if that fails we render placeholder
-    } else {
-      timestampId = this.settings.timestampId;
-    }
-    return layer[type].timestamps[timestampId].extent;
   };
 
   invalidRender = (validobj) => {
@@ -449,7 +436,6 @@ class EllipsisPreview {
     grayout.style.width = `${this.settings.width}px`;
     grayout.style.height = `${this.settings.height}px`;
 
-    //
     if (!this.settings.disableCbIfNoPreview){
       div.onclick = () => {
         this.settings.cb(this.settings.layer);
@@ -551,7 +537,19 @@ class EllipsisPreview {
   loadingRender = () => {
     // should at some point just render the same as previewrender, but grayed out
     let div = document.createElement("div");
-    div.appendChild(this.p("Loading..."));
+    div.style.width = `${this.settings.width}px`;
+    div.style.height = `${this.settings.height}px`;
+    div.style.backgroundColor = "#00000054";
+
+
+    // "Loading" text could be included if wanted
+
+    // let loadtxt = this.p("Loading...");
+    // loadtxt.style.position = "relative";
+    // loadtxt.style.textAlign = "center";
+    // loadtxt.style.top = `${this.settings.height / 2 - 10}px`;
+    // div.appendChild(loadtxt);
+    
     return div;
   };
 
