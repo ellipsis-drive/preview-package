@@ -98,6 +98,8 @@ class EllipsisPreview {
 
     this.layerLoaded = true;
     this.layer = await request.json();
+
+    console.log(this.layer);
     this.render();
     return;
   };
@@ -210,10 +212,15 @@ class EllipsisPreview {
         url = `${API}ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${width}&height=${height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
       }
     } else if (this.layer.type === "vector"){
-      let header = {};
+
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.settings.token}`,
+      };
+
       let res = await fetch(`${API}/path/${mapId}/vector/timestamp/${timestampId}/listFeatures?returnType=center&pageSize=50`, {
         method: "GET",
-        header: header,
+        headers: headers,
       });
       res = await res.json();
       
