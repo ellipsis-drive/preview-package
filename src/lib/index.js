@@ -446,11 +446,11 @@ class EllipsisPreview {
 
   previewRender = () => {
     let div = document.createElement("div");
-    div.className = "ellipsis-preview-img";
     div.style.width = `${this.settings.width}px`;
     div.style.height = `${this.settings.height}px`;
 
-    div.id = `ellipsis-preview-${this.settings.layer.id}` 
+    div.id = `ellipsis-preview-${this.settings.layer.id}`;
+    div.classList.add("ellipsis-preview");
 
     let style = {
       left: "0",
@@ -477,9 +477,12 @@ class EllipsisPreview {
     };
 
     let basepng = this.getBaseMapPng(obj);
+    basepng.classList.add("ellipsis-preview-base")
 
     let ellipsispngdiv = document.createElement("div");
     this.setEllipsisMapPng(obj, ellipsispngdiv);
+
+    ellipsispngdiv.classList.add("ellipsis-preview-overlay")
     
     let layertype = document.createElement("div");
 
@@ -502,13 +505,15 @@ class EllipsisPreview {
     typesvg.style.width = "1.1em";
     typesvg.style.paddingLeft = "10px";
 
+    typesvg.classList.add(`ellipsis-preview-type`);
+
     layertype.appendChild(typesvg);
     let layertypetext = document.createElement("span");
     layertypetext.innerHTML = this.settings.layer.type;
     layertypetext.style.textTransform = "capitalize";
     layertypetext.style.display = "inline-flex";
     layertypetext.style.alignItems = "center";
-    layertypetext.style.padding = "0 12px";
+    layertypetext.style.padding = "0 12px 2px 5px";
     layertypetext.style.fontFamily = "Roboto Condensed, Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol";
     layertypetext.style.userSelect = "none";
 
