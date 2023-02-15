@@ -71,12 +71,6 @@ class EllipsisPreview {
     return { available: true };
   };
 
-  noTokenDiv = () => {
-    let div = document.createElement("div");
-    div.appendChild(this.p("Please supply a token"));
-    return div;
-  };
-
   getMetaData = async (pathId) => {
     let headers = {
       "Content-Type": "application/json",
@@ -516,7 +510,8 @@ class EllipsisPreview {
     layertypetext.style.alignItems = "center";
     layertypetext.style.padding = "0 12px";
     layertypetext.style.fontFamily = "Roboto Condensed, Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol";
-    
+    layertypetext.style.userSelect = "none";
+
     layertype.appendChild(layertypetext);
     
     div.appendChild(basepng);
