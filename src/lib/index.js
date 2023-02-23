@@ -44,7 +44,7 @@ class EllipsisPreview {
         return { available: false, reason: 'Relocating layer' };
       } else if (m[t].timestamps.find((t) => t.availability?.reason === 'reindexing')) {
         return { available: false, reason: 'Reindexing layer' };
-      } else if (m[t].type === 'raster' && m[t].timestamps.filter((t) => t.totalSize > 0).length === 0) {
+      } else if (t === 'raster' && m[t].timestamps.filter((t) => t.totalSize > 0).length === 0) {
         return { available: false, reason: 'No uploads' };
       } else if (m[t].timestamps.find((t) => t.status === 'activating')) {
         return { available: false, reason: 'Activating files' };
