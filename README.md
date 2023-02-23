@@ -20,7 +20,9 @@ Place preview.js in your project directory. Construct an EllipsisPreview object,
 11. "showLayerType" (optional), default true, determines whether the type of the layer is displayed
 12. "vectorPreviewFeaturesCount" (optional),  default 50, the number of features displayed for vector layers
 
-#### Example usage
+### Example usage
+Place "ellipsis-preview.js" in the same folder as test.html and main.js. You can find ellipsis-preview.js to the right at the Github page, or click [here](https://github.com/ellipsis-drive/preview-package/releases/).
+
 test.html
 
 ```html
