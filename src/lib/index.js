@@ -14,7 +14,9 @@ const COLOR = {
 class EllipsisPreview {
 
   isValidTimestamp = (t) => {
-    if (t.status !== 'finished') {
+    console.log("isValidTimestamp");
+    console.log(t);
+    if (t.status !== 'active') {
       return { available: false, reason: 'Timestamp not active' };
     } else if (t.availability.blocked) {
       return { available: false, reason: t.availability.reason };
@@ -24,6 +26,8 @@ class EllipsisPreview {
   
   isValidMap = (m) => {
     const t = m.type;
+    console.log(m);
+    console.log(m[t].timestamps.filter((t) => this.isValidTimestamp(t).available));
     if (!m) {
       return { available: false, reason: 'No Layer' };
     }
@@ -299,6 +303,7 @@ class EllipsisPreview {
     disableCbIfNoPreview: false,
     osmToken: null,
     layer: null,
+    showLayerType: true,
   };
 
   settings = {};
@@ -520,7 +525,9 @@ class EllipsisPreview {
     
     div.appendChild(basepng);
     div.appendChild(ellipsispngdiv);
-    div.appendChild(layertype);
+    if (this.settings.showLayerType){
+      div.appendChild(layertype);
+    }
 
     div.onclick = () => {
       this.settings.cb(this.settings.layer);
