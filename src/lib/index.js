@@ -346,6 +346,7 @@ class EllipsisPreview {
 
   getPlaceholderImg = () => {
     let placeholder = document.createElement("div");
+    placeholder.classList.add("ellipsis-preview-placeholder");
     placeholder.style.width = "inherit";
     placeholder.style.height = "inherit";
     placeholder.style.gap = "12px";
@@ -404,6 +405,7 @@ class EllipsisPreview {
 
     let reason = document.createElement("div");
 
+    reason.classList.add("ellipsis-preview-reason")
     reason.appendChild(this.p(validobj.reason));
 
     reason.style.color = "#FFF";
@@ -420,6 +422,7 @@ class EllipsisPreview {
     div.style.justifyContent = "center";
 
     let grayout = document.createElement("div");
+    grayout.classList.add("ellipsis-preview-gray")
     grayout.style.backgroundColor = "#00000054";
     grayout.style.position = "absolute";
     grayout.style.zIndex = "2";
