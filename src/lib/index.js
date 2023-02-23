@@ -14,8 +14,6 @@ const COLOR = {
 class EllipsisPreview {
 
   isValidTimestamp = (t) => {
-    console.log("isValidTimestamp");
-    console.log(t);
     if (t.status !== 'active') {
       return { available: false, reason: 'Timestamp not active' };
     } else if (t.availability.blocked) {
@@ -26,8 +24,6 @@ class EllipsisPreview {
   
   isValidMap = (m) => {
     const t = m.type;
-    console.log(m);
-    console.log(m[t].timestamps.filter((t) => this.isValidTimestamp(t).available));
     if (!m) {
       return { available: false, reason: 'No Layer' };
     }
