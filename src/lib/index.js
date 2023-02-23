@@ -23,10 +23,11 @@ class EllipsisPreview {
   };
   
   isValidMap = (m) => {
+    const t = m.type;
     if (!m) {
       return { available: false, reason: 'No Layer' };
     }
-    if (m.type !== 'map' && m.type !== 'shape') {
+    if (m.type !== 'raster' && m.type !== 'vector') {
       return { available: true };
     }
     if (m.disabled) {
@@ -38,18 +39,18 @@ class EllipsisPreview {
     if (m.yourAccess.accessLevel === 0) {
       return { available: false, reason: 'No access' };
     }
-    if (m.timestamps.filter((t) => isValidTimestamp(t, m).available).length === 0) {
-      if (m.timestamps.find((t) => t.availability?.reason === 'relocation')) {
+    if (m[t].timestamps.filter((t) => this.isValidTimestamp(t, m).available).length === 0) {
+      if (m[t].timestamps.find((t) => t.availability?.reason === 'relocation')) {
         return { available: false, reason: 'Relocating layer' };
-      } else if (m.timestamps.find((t) => t.availability?.reason === 'reindexing')) {
+      } else if (m[t].timestamps.find((t) => t.availability?.reason === 'reindexing')) {
         return { available: false, reason: 'Reindexing layer' };
-      } else if (m.type === 'map' && m.timestamps.filter((t) => t.totalSize > 0).length === 0) {
+      } else if (m[t].type === 'raster' && m[t].timestamps.filter((t) => t.totalSize > 0).length === 0) {
         return { available: false, reason: 'No uploads' };
-      } else if (m.timestamps.find((t) => t.status === 'activating')) {
+      } else if (m[t].timestamps.find((t) => t.status === 'activating')) {
         return { available: false, reason: 'Activating files' };
-      } else if (m.timestamps.find((t) => t.status === 'pausing')) {
+      } else if (m[t].timestamps.find((t) => t.status === 'pausing')) {
         return { available: false, reason: 'Pausing files' };
-      } else if (m.timestamps.find((t) => t.status === 'paused')) {
+      } else if (m[t].timestamps.find((t) => t.status === 'paused')) {
         return { available: false, reason: 'No active timestamps' };
       } else {
         return { available: false, reason: 'No timestamps' };
@@ -70,8 +71,13 @@ class EllipsisPreview {
 
     });
 
-    this.settings.layer = await request.json();
+    let resjson = await request.json();
 
+    if (resjson.status == 403){
+      console.warn(`Ellipsis Preview: Insufficient access for layer ${this.settings.pathId}`);
+    } else {
+      this.settings.layer = resjson;
+    }
     this.render();
     return;
   };
@@ -369,11 +375,11 @@ class EllipsisPreview {
     if (this.settings.timestampId !== null){
       timestamp = layer[type].timestamps.find(elem => elem.id === this.settings.timestampId);
     } else {
-      timestamp = layer[type].timestamps[0]
+      timestamp = layer[type].timestamps[0];
     }
 
     // same for styleId
-
+  
     if (this.settings.styleId !== null){
       styleId = this.settings.styleId;
     } else {
@@ -523,7 +529,6 @@ class EllipsisPreview {
   };
 
   loadingRender = () => {
-    // should at some point just render the same as previewrender, but grayed out
     let div = document.createElement("div");
     div.style.width = `${this.settings.width}px`;
     div.style.height = `${this.settings.height}px`;
