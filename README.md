@@ -25,25 +25,29 @@ test.html
 
 ```html
 <html>
-  <head>
-    <script src="https://raw.githubusercontent.com/ellipsis-drive/preview-package/npm-support/build/ellipsis-preview.js"></script>
-  </head>
   <body>
-    <div id="test"></div>
-    <script>
-      let cb = (layer) => {
-        console.log("Preview clicked");
-      };
-      let div = document.getElementById("test");
-
-      let options = {
-        div: div,
-        cb: cb,
-        pathId: "2109c37a-d549-45dd-858e-7eddf1bd7c22",
-      }
-
-      let myDrive = new EllipsisDrive(options);
-    </script>
+    <div id="test" style="width: 300px; height: 240px;"></div>
+    <script type="module" src="main.js"></script>
   </body>
 </html>
+```
+
+main.js
+```javascript
+import "./ellipsis-preview.js"
+
+let div = document.getElementById("test");
+
+let callback = (layerobj) => {
+    console.log("Clicked on layer");
+    console.log(layerobj);
+}
+
+let options = {
+    div: div,
+    pathId: "2109c37a-d549-45dd-858e-7eddf1bd7c22", // vulcano
+    cb: callback,
+};
+
+let preview = new EllipsisPreview(options);
 ```
