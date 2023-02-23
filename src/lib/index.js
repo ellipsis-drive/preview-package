@@ -12,60 +12,47 @@ const COLOR = {
 }
 
 class EllipsisPreview {
+
   isValidTimestamp = (t) => {
-    if (t.status !== "active") {
-      return { available: false, reason: "Timestamp not active" };
+    if (t.status !== 'finished') {
+      return { available: false, reason: 'Timestamp not active' };
     } else if (t.availability.blocked) {
       return { available: false, reason: t.availability.reason };
     }
     return { available: true };
   };
-
+  
   isValidMap = (m) => {
     if (!m) {
-      return { available: false, reason: "No Layer" };
+      return { available: false, reason: 'No Layer' };
     }
-    if (m.type !== "raster" && m.type !== "vector") {
+    if (m.type !== 'map' && m.type !== 'shape') {
       return { available: true };
     }
     if (m.disabled) {
-      return { available: false, reason: "Layer disabled" };
+      return { available: false, reason: 'Layer disabled' };
     }
-    if (m.deleted) {
-      return { available: false, reason: "Layer trashed" };
+    if (m.trashed) {
+      return { available: false, reason: 'Layer trashed' };
     }
     if (m.yourAccess.accessLevel === 0) {
-      return { available: false, reason: "No access" };
+      return { available: false, reason: 'No access' };
     }
-    if (
-      m[m.type].timestamps.filter((t) => this.isValidTimestamp(t, m).available)
-        .length === 0
-    ) {
-      if (
-        m[m.type].timestamps.find(
-          (t) => t.availability?.reason === "relocation"
-        )
-      ) {
-        return { available: false, reason: "Relocating layer" };
-      } else if (
-        m[m.type].timestamps.find(
-          (t) => t.availability?.reason === "reindexing"
-        )
-      ) {
-        return { available: false, reason: "Reindexing layer" };
-      } else if (
-        m.type === "raster" &&
-        m[m.type].timestamps.filter((t) => t.uploads.completed > 0).length === 0
-      ) {
-        return { available: false, reason: "No uploads" };
-      } else if (m[m.type].timestamps.find((t) => t.status === "activating")) {
-        return { available: false, reason: "Activating files" };
-      } else if (m[m.type].timestamps.find((t) => t.status === "pausing")) {
-        return { available: false, reason: "Pausing files" };
-      } else if (m[m.type].timestamps.find((t) => t.status === "created")) {
-        return { available: false, reason: "No active timestamps" };
+    if (m.timestamps.filter((t) => isValidTimestamp(t, m).available).length === 0) {
+      if (m.timestamps.find((t) => t.availability?.reason === 'relocation')) {
+        return { available: false, reason: 'Relocating layer' };
+      } else if (m.timestamps.find((t) => t.availability?.reason === 'reindexing')) {
+        return { available: false, reason: 'Reindexing layer' };
+      } else if (m.type === 'map' && m.timestamps.filter((t) => t.totalSize > 0).length === 0) {
+        return { available: false, reason: 'No uploads' };
+      } else if (m.timestamps.find((t) => t.status === 'activating')) {
+        return { available: false, reason: 'Activating files' };
+      } else if (m.timestamps.find((t) => t.status === 'pausing')) {
+        return { available: false, reason: 'Pausing files' };
+      } else if (m.timestamps.find((t) => t.status === 'paused')) {
+        return { available: false, reason: 'No active timestamps' };
       } else {
-        return { available: false, reason: "No timestamps" };
+        return { available: false, reason: 'No timestamps' };
       }
     }
     return { available: true };
@@ -174,6 +161,9 @@ class EllipsisPreview {
     return img;
   };
 
+  // this function sets the 'overlay' of the layer
+  // async, because for vector layers we have to do do an api call and process it
+  // for raster layers we can set the api call as the img src and lazy load it
   setEllipsisMapPng = async ({
     mapId,
     extent,
