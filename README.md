@@ -2,6 +2,8 @@
 
 This package allows you to easily load a preview for your Ellipsis Drive layers.
 
+![Ellipsis Preview example](img/preview_example.png "Ellipsis Preview example")
+
 
 ### Using the package
 
