@@ -161,7 +161,7 @@ class EllipsisPreview {
         newExtent.yMax
       }&SRS=EPSG%3A3857&WIDTH=${this.settings.width}&HEIGHT=${Number(
         height / 1
-      )}&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true${tokenstr}`;
+      )}&LAYERS=OSM-WMS-no-labels&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true`;
     } else {
       // if a custom background WMS url is set, use it
       img.src = `${this.settings.backgroundWmsUrl}&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&WIDTH=${this.settings.width}&HEIGHT=${this.settings.height}`;
