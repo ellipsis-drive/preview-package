@@ -150,22 +150,7 @@ class EllipsisPreview {
       this.getReprojectedExtent(extent)
     );
 
-    const tokenstr =
-      this.settings.osmToken === null ? "" : `&TOKEN=${this.settings.osmToken}`;
-
-    if (this.settings.backgroundWmsUrl === null) {
-      // if no custom background WMS url is set, use OSM
-      img.src = `https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
-        newExtent.xMin
-      },${newExtent.yMin},${newExtent.xMax},${
-        newExtent.yMax
-      }&SRS=EPSG%3A3857&WIDTH=${this.settings.width}&HEIGHT=${Number(
-        height / 1
-      )}&LAYERS=OSM-WMS-no-labels&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true`;
-    } else {
-      // if a custom background WMS url is set, use it
-      img.src = `${this.settings.backgroundWmsUrl}&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&WIDTH=${this.settings.width}&HEIGHT=${this.settings.height}`;
-    }
+    img.src = `${this.settings.backgroundWmsUrl}&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&WIDTH=${this.settings.width}&HEIGHT=${this.settings.height}`;
 
     img.alt = this.settings.layer.name;
     img.loading = "lazy";
@@ -316,7 +301,7 @@ class EllipsisPreview {
     osmToken: null,
     layer: null,
     showLayerType: true,
-    backgroundWmsUrl: null,
+    backgroundWmsUrl: "https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3857&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96",
   };
 
   settings = {};
