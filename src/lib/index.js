@@ -3,57 +3,68 @@ import geojson2svg from "./geojson2svg";
 
 const API = "https://api.ellipsis-drive.com/v3";
 
-const SVG = {"vector" : `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="draw-polygon" class="svg-inline--fa fa-draw-polygon MuiChip-icon MuiChip-iconMedium MuiChip-iconColorDefault" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 352c-.35 0-.67.1-1.02.1l-39.2-65.32c5.07-9.17 8.22-19.56 8.22-30.78s-3.14-21.61-8.22-30.78l39.2-65.32c.35.01.67.1 1.02.1 35.35 0 64-28.65 64-64s-28.65-64-64-64c-23.63 0-44.04 12.95-55.12 32H119.12C108.04 44.95 87.63 32 64 32 28.65 32 0 60.65 0 96c0 23.63 12.95 44.04 32 55.12v209.75C12.95 371.96 0 392.37 0 416c0 35.35 28.65 64 64 64 23.63 0 44.04-12.95 55.12-32h209.75c11.09 19.05 31.49 32 55.12 32 35.35 0 64-28.65 64-64 .01-35.35-28.64-64-63.99-64zm-288 8.88V151.12A63.825 63.825 0 0 0 119.12 128h208.36l-38.46 64.1c-.35-.01-.67-.1-1.02-.1-35.35 0-64 28.65-64 64s28.65 64 64 64c.35 0 .67-.1 1.02-.1l38.46 64.1H119.12A63.748 63.748 0 0 0 96 360.88zM272 256c0-8.82 7.18-16 16-16s16 7.18 16 16-7.18 16-16 16-16-7.18-16-16zM400 96c0 8.82-7.18 16-16 16s-16-7.18-16-16 7.18-16 16-16 16 7.18 16 16zM64 80c8.82 0 16 7.18 16 16s-7.18 16-16 16-16-7.18-16-16 7.18-16 16-16zM48 416c0-8.82 7.18-16 16-16s16 7.18 16 16-7.18 16-16 16-16-7.18-16-16zm336 16c-8.82 0-16-7.18-16-16s7.18-16 16-16 16 7.18 16 16-7.18 16-16 16z"></path></svg>`,
-              "raster": `<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-icon MuiChip-iconMedium MuiChip-iconColorDefault css-14yq2cq" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="MapIcon"><path d="m20.5 3-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>`}
+const SVG = {
+  vector: `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="draw-polygon" class="svg-inline--fa fa-draw-polygon MuiChip-icon MuiChip-iconMedium MuiChip-iconColorDefault" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 352c-.35 0-.67.1-1.02.1l-39.2-65.32c5.07-9.17 8.22-19.56 8.22-30.78s-3.14-21.61-8.22-30.78l39.2-65.32c.35.01.67.1 1.02.1 35.35 0 64-28.65 64-64s-28.65-64-64-64c-23.63 0-44.04 12.95-55.12 32H119.12C108.04 44.95 87.63 32 64 32 28.65 32 0 60.65 0 96c0 23.63 12.95 44.04 32 55.12v209.75C12.95 371.96 0 392.37 0 416c0 35.35 28.65 64 64 64 23.63 0 44.04-12.95 55.12-32h209.75c11.09 19.05 31.49 32 55.12 32 35.35 0 64-28.65 64-64 .01-35.35-28.64-64-63.99-64zm-288 8.88V151.12A63.825 63.825 0 0 0 119.12 128h208.36l-38.46 64.1c-.35-.01-.67-.1-1.02-.1-35.35 0-64 28.65-64 64s28.65 64 64 64c.35 0 .67-.1 1.02-.1l38.46 64.1H119.12A63.748 63.748 0 0 0 96 360.88zM272 256c0-8.82 7.18-16 16-16s16 7.18 16 16-7.18 16-16 16-16-7.18-16-16zM400 96c0 8.82-7.18 16-16 16s-16-7.18-16-16 7.18-16 16-16 16 7.18 16 16zM64 80c8.82 0 16 7.18 16 16s-7.18 16-16 16-16-7.18-16-16 7.18-16 16-16zM48 416c0-8.82 7.18-16 16-16s16 7.18 16 16-7.18 16-16 16-16-7.18-16-16zm336 16c-8.82 0-16-7.18-16-16s7.18-16 16-16 16 7.18 16 16-7.18 16-16 16z"></path></svg>`,
+  raster: `<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-icon MuiChip-iconMedium MuiChip-iconColorDefault css-14yq2cq" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="MapIcon"><path d="m20.5 3-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"></path></svg>`,
+};
 
 const COLOR = {
-  "vector": "#3F51B5",
-  "raster": "#00796B",
-}
+  vector: "#3F51B5",
+  raster: "#00796B",
+};
 
 class EllipsisPreview {
-
   isValidTimestamp = (t) => {
-    if (t.status !== 'active') {
-      return { available: false, reason: 'Timestamp not active' };
+    if (t.status !== "active") {
+      return { available: false, reason: "Timestamp not active" };
     } else if (t.availability.blocked) {
       return { available: false, reason: t.availability.reason };
     }
     return { available: true };
   };
-  
+
   isValidMap = (m) => {
     const t = m.type;
     if (!m) {
-      return { available: false, reason: 'No Layer' };
+      return { available: false, reason: "No Layer" };
     }
-    if (m.type !== 'raster' && m.type !== 'vector') {
+    if (m.type !== "raster" && m.type !== "vector") {
       return { available: true };
     }
     if (m.disabled) {
-      return { available: false, reason: 'Layer disabled' };
+      return { available: false, reason: "Layer disabled" };
     }
     if (m.trashed) {
-      return { available: false, reason: 'Layer trashed' };
+      return { available: false, reason: "Layer trashed" };
     }
     if (m.yourAccess.accessLevel === 0) {
-      return { available: false, reason: 'No access' };
+      return { available: false, reason: "No access" };
     }
-    if (m[t].timestamps.filter((t) => this.isValidTimestamp(t, m).available).length === 0) {
-      if (m[t].timestamps.find((t) => t.availability?.reason === 'relocation')) {
-        return { available: false, reason: 'Relocating layer' };
-      } else if (m[t].timestamps.find((t) => t.availability?.reason === 'reindexing')) {
-        return { available: false, reason: 'Reindexing layer' };
-      } else if (t === 'raster' && m[t].timestamps.filter((t) => t.totalSize > 0).length === 0) {
-        return { available: false, reason: 'No uploads' };
-      } else if (m[t].timestamps.find((t) => t.status === 'activating')) {
-        return { available: false, reason: 'Activating files' };
-      } else if (m[t].timestamps.find((t) => t.status === 'pausing')) {
-        return { available: false, reason: 'Pausing files' };
-      } else if (m[t].timestamps.find((t) => t.status === 'paused')) {
-        return { available: false, reason: 'No active timestamps' };
+    if (
+      m[t].timestamps.filter((t) => this.isValidTimestamp(t, m).available)
+        .length === 0
+    ) {
+      if (
+        m[t].timestamps.find((t) => t.availability?.reason === "relocation")
+      ) {
+        return { available: false, reason: "Relocating layer" };
+      } else if (
+        m[t].timestamps.find((t) => t.availability?.reason === "reindexing")
+      ) {
+        return { available: false, reason: "Reindexing layer" };
+      } else if (
+        t === "raster" &&
+        m[t].timestamps.filter((t) => t.totalSize > 0).length === 0
+      ) {
+        return { available: false, reason: "No uploads" };
+      } else if (m[t].timestamps.find((t) => t.status === "activating")) {
+        return { available: false, reason: "Activating files" };
+      } else if (m[t].timestamps.find((t) => t.status === "pausing")) {
+        return { available: false, reason: "Pausing files" };
+      } else if (m[t].timestamps.find((t) => t.status === "paused")) {
+        return { available: false, reason: "No active timestamps" };
       } else {
-        return { available: false, reason: 'No timestamps' };
+        return { available: false, reason: "No timestamps" };
       }
     }
     return { available: true };
@@ -68,13 +79,14 @@ class EllipsisPreview {
     let request = await fetch(`${API}/path/${pathId}`, {
       method: "GET",
       headers: headers,
-
     });
 
     let resjson = await request.json();
 
-    if (resjson.status == 403){
-      console.warn(`Ellipsis Preview: Insufficient access for layer ${this.settings.pathId}`);
+    if (resjson.status == 403) {
+      console.warn(
+        `Ellipsis Preview: Insufficient access for layer ${this.settings.pathId}`
+      );
     } else {
       this.settings.layer = resjson;
     }
@@ -138,15 +150,22 @@ class EllipsisPreview {
       this.getReprojectedExtent(extent)
     );
 
-    const tokenstr = this.settings.osmToken === null ? "" : `&TOKEN=${this.settings.osmToken}`
+    const tokenstr =
+      this.settings.osmToken === null ? "" : `&TOKEN=${this.settings.osmToken}`;
 
-    img.src = `https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
-      newExtent.xMin
-    },${newExtent.yMin},${newExtent.xMax},${
-      newExtent.yMax
-    }&SRS=EPSG%3A3857&WIDTH=${this.settings.width}&HEIGHT=${Number(
-      height / 1
-    )}&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true${tokenstr}`;
+    if (this.settings.backgroundWmsUrl === null) {
+      // if no custom background WMS url is set, use OSM
+      img.src = `https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${
+        newExtent.xMin
+      },${newExtent.yMin},${newExtent.xMax},${
+        newExtent.yMax
+      }&SRS=EPSG%3A3857&WIDTH=${this.settings.width}&HEIGHT=${Number(
+        height / 1
+      )}&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=true${tokenstr}`;
+    } else {
+      // if a custom background WMS url is set, use it
+      img.src = `${this.settings.backgroundWmsUrl}&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&WIDTH=${this.settings.width}&HEIGHT=${this.settings.height}`;
+    }
 
     img.alt = this.settings.layer.name;
     img.loading = "lazy";
@@ -170,26 +189,23 @@ class EllipsisPreview {
   // this function sets the 'overlay' of the layer
   // async, because for vector layers we have to do do an api call and process it
   // for raster layers we can set the api call as the img src and lazy load it
-  setEllipsisMapPng = async ({
-    mapId,
-    extent,
-    timestampId,
-    styleId,
-    width,
-    height,
-    token,
-  }, targetdiv) => {
-
+  setEllipsisMapPng = async (
+    { mapId, extent, timestampId, styleId, width, height, token },
+    targetdiv
+  ) => {
     let img = document.createElement("img");
-    let vectorssvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    let vectorssvg = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
 
     const reprojectedExtent = this.getReprojectedExtent(extent);
 
-    const newExtent = this.getNewExtent(width/height, reprojectedExtent);
+    const newExtent = this.getNewExtent(width / height, reprojectedExtent);
 
     let url = "";
 
-    if (this.settings.layer.type === "raster"){
+    if (this.settings.layer.type === "raster") {
       if (token) {
         url = `${API}/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${this.settings.width}&height=${this.settings.height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
       } else {
@@ -199,7 +215,7 @@ class EllipsisPreview {
       img.src = url;
       img.alt = this.settings.layer.name;
       img.loading = "lazy";
-  
+
       let style = {
         top: "0",
         bottom: "0",
@@ -207,26 +223,27 @@ class EllipsisPreview {
         position: "absolute",
         background: "transparent",
       };
-  
+
       for (const key in style) {
         img.style[key] = style[key];
       }
-  
+
       targetdiv.appendChild(img);
-
-    } else if (this.settings.layer.type === "vector"){
-
+    } else if (this.settings.layer.type === "vector") {
       let headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.settings.token}`,
       };
 
-      let res = await fetch(`${API}/path/${mapId}/vector/timestamp/${timestampId}/listFeatures?returnType=center&pageSize=${this.settings.vectorPreviewFeaturesCount}`, {
-        method: "GET",
-        headers: headers,
-      });
+      let res = await fetch(
+        `${API}/path/${mapId}/vector/timestamp/${timestampId}/listFeatures?returnType=center&pageSize=${this.settings.vectorPreviewFeaturesCount}`,
+        {
+          method: "GET",
+          headers: headers,
+        }
+      );
       res = await res.json();
-      
+
       let reprojectedResult = {
         ...res.result,
         features: res?.result?.features?.map((feature) => {
@@ -241,7 +258,7 @@ class EllipsisPreview {
             },
             geometry: {
               ...feature.geometry,
-              coordinates: proj4('EPSG:4326', 'EPSG:3857', [
+              coordinates: proj4("EPSG:4326", "EPSG:3857", [
                 feature.geometry.coordinates[0],
                 feature.geometry.coordinates[1],
               ]),
@@ -265,9 +282,9 @@ class EllipsisPreview {
         r: Math.ceil((height / 100) * 5),
         attributes: [
           {
-            property: 'properties.color',
-            type: 'dynamic',
-            key: 'fill',
+            property: "properties.color",
+            type: "dynamic",
+            key: "fill",
           },
         ],
       });
@@ -282,9 +299,8 @@ class EllipsisPreview {
       vectorssvg.style.height = "100%";
       vectorssvg.innerHTML = svgStrings;
 
-      targetdiv.appendChild(vectorssvg)
+      targetdiv.appendChild(vectorssvg);
     }
-
   };
 
   defaultSettings = {
@@ -300,6 +316,7 @@ class EllipsisPreview {
     osmToken: null,
     layer: null,
     showLayerType: true,
+    backgroundWmsUrl: null,
   };
 
   settings = {};
@@ -318,17 +335,17 @@ class EllipsisPreview {
     }
 
     // if no width and height is supplied by the user, we use the width and height of the div we've been given
-    if (this.settings.width === null && this.settings.height === null){
+    if (this.settings.width === null && this.settings.height === null) {
       this.settings.width = this.settings.div.offsetWidth;
       this.settings.height = this.settings.div.offsetHeight;
     }
 
     // if the user provides a layer object, we don't have to do anything
-    // if a pathId is provided, we retrieve the layer information ourselves. 
+    // if a pathId is provided, we retrieve the layer information ourselves.
     // if none is provided, we can't render a preview
-    if (this.settings.layer === null){
-      if (this.settings.pathId === null){
-        console.warn("EllipsisPreview: no pathId or layer object is provided!")
+    if (this.settings.layer === null) {
+      if (this.settings.pathId === null) {
+        console.warn("EllipsisPreview: no pathId or layer object is provided!");
       } else {
         this.getMetaData(this.settings.pathId);
       }
@@ -374,15 +391,17 @@ class EllipsisPreview {
 
     // if timestampId is provided, find that timestamp, otherwise pick the first one
 
-    if (this.settings.timestampId !== null){
-      timestamp = layer[type].timestamps.find(elem => elem.id === this.settings.timestampId);
+    if (this.settings.timestampId !== null) {
+      timestamp = layer[type].timestamps.find(
+        (elem) => elem.id === this.settings.timestampId
+      );
     } else {
       timestamp = layer[type].timestamps[0];
     }
 
     // same for styleId
-  
-    if (this.settings.styleId !== null){
+
+    if (this.settings.styleId !== null) {
       styleId = this.settings.styleId;
     } else {
       styleId = layer[type].styles[0].id;
@@ -392,7 +411,7 @@ class EllipsisPreview {
       extent: timestamp.extent,
       timestampId: timestamp.id,
       styleId: styleId,
-    }
+    };
   };
 
   invalidRender = (validobj) => {
@@ -406,14 +425,14 @@ class EllipsisPreview {
 
     let reason = document.createElement("div");
 
-    reason.classList.add("ellipsis-preview-reason")
+    reason.classList.add("ellipsis-preview-reason");
     reason.appendChild(this.p(validobj.reason));
 
     reason.style.color = "#FFF";
 
     reason.style.position = "absolute";
     reason.style.zIndex = 3;
-    
+
     div.style.display = "flex";
     div.style.display = "flex";
     div.style.position = "absolute";
@@ -423,26 +442,26 @@ class EllipsisPreview {
     div.style.justifyContent = "center";
 
     let grayout = document.createElement("div");
-    grayout.classList.add("ellipsis-preview-gray")
+    grayout.classList.add("ellipsis-preview-gray");
     grayout.style.backgroundColor = "#00000054";
     grayout.style.position = "absolute";
     grayout.style.zIndex = "2";
     grayout.style.width = `${this.settings.width}px`;
     grayout.style.height = `${this.settings.height}px`;
 
-    if (!this.settings.disableCbIfNoPreview){
+    if (!this.settings.disableCbIfNoPreview) {
       div.onclick = () => {
         this.settings.cb(this.settings.layer);
-      }
+      };
       div.style.cursor = "pointer";
     }
 
     div.appendChild(placeholder);
     div.appendChild(reason);
     div.appendChild(grayout);
-    
+
     return div;
-  }
+  };
 
   previewRender = () => {
     let div = document.createElement("div");
@@ -477,13 +496,13 @@ class EllipsisPreview {
     };
 
     let basepng = this.getBaseMapPng(obj);
-    basepng.classList.add("ellipsis-preview-base")
+    basepng.classList.add("ellipsis-preview-base");
 
     let ellipsispngdiv = document.createElement("div");
     this.setEllipsisMapPng(obj, ellipsispngdiv);
 
-    ellipsispngdiv.classList.add("ellipsis-preview-overlay")
-    
+    ellipsispngdiv.classList.add("ellipsis-preview-overlay");
+
     let layertype = document.createElement("div");
 
     layertype.style.backgroundColor = COLOR[this.settings.layer.type];
@@ -491,7 +510,7 @@ class EllipsisPreview {
     layertype.style.right = "12px";
     layertype.style.bottom = "12px";
     layertype.style.padding = "0 12 px";
-    layertype.style.zIndex = "3"
+    layertype.style.zIndex = "3";
     layertype.style.position = "absolute";
     layertype.style.height = "32px";
 
@@ -500,7 +519,7 @@ class EllipsisPreview {
     layertype.style.borderRadius = "16px";
 
     let typesvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    typesvg.innerHTML = SVG[this.settings.layer.type]
+    typesvg.innerHTML = SVG[this.settings.layer.type];
     typesvg.style.fill = "#fff";
     typesvg.style.width = "1.1em";
     typesvg.style.paddingLeft = "10px";
@@ -514,20 +533,21 @@ class EllipsisPreview {
     layertypetext.style.display = "inline-flex";
     layertypetext.style.alignItems = "center";
     layertypetext.style.padding = "0 12px 2px 5px";
-    layertypetext.style.fontFamily = "Roboto Condensed, Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol";
+    layertypetext.style.fontFamily =
+      "Roboto Condensed, Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol";
     layertypetext.style.userSelect = "none";
 
     layertype.appendChild(layertypetext);
-    
+
     div.appendChild(basepng);
     div.appendChild(ellipsispngdiv);
-    if (this.settings.showLayerType){
+    if (this.settings.showLayerType) {
       div.appendChild(layertype);
     }
 
     div.onclick = () => {
       this.settings.cb(this.settings.layer);
-    }
+    };
 
     div.style.cursor = "pointer";
 
@@ -540,7 +560,6 @@ class EllipsisPreview {
     div.style.height = `${this.settings.height}px`;
     div.style.backgroundColor = "#00000054";
 
-
     // "Loading" text could be included if wanted
 
     // let loadtxt = this.p("Loading...");
@@ -548,22 +567,22 @@ class EllipsisPreview {
     // loadtxt.style.textAlign = "center";
     // loadtxt.style.top = `${this.settings.height / 2 - 10}px`;
     // div.appendChild(loadtxt);
-    
+
     return div;
   };
 
   render = () => {
     this.settings.div.innerHTML = "";
-      if (this.settings.layer !== null) {
-        let valid = this.isValidMap(this.settings.layer);
-        if (valid.available){
-          this.settings.div.appendChild(this.previewRender());
-        } else {
-          this.settings.div.appendChild(this.invalidRender(valid));
-        }
+    if (this.settings.layer !== null) {
+      let valid = this.isValidMap(this.settings.layer);
+      if (valid.available) {
+        this.settings.div.appendChild(this.previewRender());
       } else {
-        this.settings.div.appendChild(this.loadingRender());
+        this.settings.div.appendChild(this.invalidRender(valid));
       }
+    } else {
+      this.settings.div.appendChild(this.loadingRender());
+    }
   };
 }
 
