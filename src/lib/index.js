@@ -209,7 +209,7 @@ class EllipsisPreview {
       if (token) {
         url = `${API}/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${this.settings.width}&height=${this.settings.height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE&token=${token}`;
       } else {
-        url = `${API}ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${this.settings.width}&height=${this.settings.height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
+        url = `${API}/ogc/wms/${mapId}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&BBOX=${newExtent.xMin},${newExtent.yMin},${newExtent.xMax},${newExtent.yMax}&SRS=EPSG:3857&width=${this.settings.width}&height=${this.settings.height}&LAYERS=${timestampId}_${styleId}&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96&TRANSPARENT=TRUE`;
       }
 
       img.src = url;
