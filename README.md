@@ -21,7 +21,7 @@ Place preview.js in your project directory. Construct an EllipsisPreview object,
 10. "disableCbIfNoPreview" (optional), default false, disable the callback when no preview is shown
 11. "showLayerType" (optional), default true, determines whether the type of the layer is displayed
 12. "vectorPreviewFeaturesCount" (optional),  default 50, the number of features displayed for vector layers
-
+13. "backgroundWmsUrl" (optional), a WMS url for the background of the preview. Default is "https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3857&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96".
 ### Example usage
 Place "ellipsis-preview.js" in the same folder as test.html and main.js. You can find ellipsis-preview.js to the right at the Github page, or click [here](https://github.com/ellipsis-drive/preview-package/releases/).
 
