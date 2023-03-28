@@ -298,7 +298,6 @@ class EllipsisPreview {
     width: null,
     height: null,
     disableCbIfNoPreview: false,
-    osmToken: null,
     layer: null,
     showLayerType: true,
     backgroundWmsUrl: "https://ows.mundialis.de/osm/service?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3857&LAYERS=OSM-WMS-no-labels&STYLES=&FORMAT=image/png&DPI=96&MAP_RESOLUTION=96&FORMAT_OPTIONS=dpi:96",
