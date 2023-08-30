@@ -1,9 +1,16 @@
 ### Ellipsis Preview
 
-This package allows you to easily load a preview for your Ellipsis Drive layers.
+This package allows you to easily create a customized preview for your Ellipsis Drive layers.
 
 ![Ellipsis Preview example](img/preview_example.png "Ellipsis Preview example")
 
+
+### Alternatives
+In case you do not need a customize your preview, you can considering the standard thumbnail of a layer that can be retrieved from the Ellipsis Drive API using the following endpoint:
+
+```
+https://api.ellipsis-drive.com/v3/path/{pathId}/thumbnail
+```
 
 ### Using the package
 
