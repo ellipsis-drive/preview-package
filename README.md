@@ -6,7 +6,7 @@ This package allows you to easily create a customized preview for your Ellipsis 
 
 
 ### Alternatives
-In case you do not need a customize your preview, you can considering the standard thumbnail of a layer that can be retrieved from the Ellipsis Drive API using the following endpoint:
+In case you do not need a customize your preview, you can consider using the standard thumbnail of a layer that can be retrieved from the Ellipsis Drive API using the following endpoint:
 
 ```
 https://api.ellipsis-drive.com/v3/path/{pathId}/thumbnail
